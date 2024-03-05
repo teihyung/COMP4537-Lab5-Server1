@@ -30,7 +30,7 @@ class DBAccessManager {
 
         xhttp.onreadystatechange = () => {
             if (xhttp.readyState === 4 && xhttp.status === 200) {
-                document.getElementById("resultVal").innerHTML = "Inserted rows successfully: " + xhttp.responseText;
+                document.getElementById("resultVal").innerHTML = insertSuccess + xhttp.responseText;
             }
         };
     }

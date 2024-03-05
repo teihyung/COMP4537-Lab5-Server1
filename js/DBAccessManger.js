@@ -35,7 +35,7 @@ class DBAccessManager {
         };
     }
 
-    function submitQuery() {
+    submitQuery() {
         const query = document.getElementById("queryInput").value.toUpperCase();
         const isSelect = query.startsWith("SELECT");
         const isInsert = query.startsWith("INSERT");

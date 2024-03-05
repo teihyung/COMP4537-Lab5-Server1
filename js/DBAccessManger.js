@@ -38,17 +38,22 @@ class DBAccessManager {
     submitQuery() {
         const query = document.getElementById("queryInput").value.toUpperCase();
         const isSelect = query.startsWith("SELECT");
+        const isInsert = query.startsWith("INSERT");
         const method = isSelect ? "GET" : "POST";
         const url = "http://yourserver.com/query";
 
         const xhttp = new XMLHttpRequest();
         xhttp.open(method, url, true);
 
-        if (!isSelect) {
+        if (isInsert) {
+            xhttp.setRequestHeader("Content-Type", "application/json");
+            const data = JSON.stringify({ query: query });
+            xhttp.send(data);
+        } else if (!isSelect) {
             xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
             xhttp.send("query=" + encodeURIComponent(query));
         } else {
-            xhttp.send();
+            console.error(errorStr);
         }
 
         xhttp.onreadystatechange = () => {
@@ -57,6 +62,7 @@ class DBAccessManager {
             }
         };
     }
+
 }
 
 document.addEventListener("DOMContentLoaded", () => {

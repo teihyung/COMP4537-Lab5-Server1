@@ -18,10 +18,10 @@ class DBAccessManager {
 
     insertRows() {
         const data = [
-            { name: 'Sara Brown', dob: '1901-01-01' },
-            { name: 'John Smith', dob: '1941-01-01' },
-            { name: 'Jack Ma', dob: '1961-01-30' },
-            { name: 'Elon Musk', dob: '1999-01-01' }
+            { name: 'Sara Brown', dateOfBirth: '1901-01-01' },
+            { name: 'John Smith', dateOfBirth: '1941-01-01' },
+            { name: 'Jack Ma', dateOfBirth: '1961-01-30' },
+            { name: 'Elon Musk', dateOfBirth: '1999-01-01' }
         ];
         const xhttp = new XMLHttpRequest();
         xhttp.open("POST", "http://localhost:8008/insert", true);
@@ -30,7 +30,8 @@ class DBAccessManager {
 
         xhttp.onreadystatechange = () => {
             if (xhttp.readyState === 4 && xhttp.status === 200) {
-                document.getElementById("resultVal").innerHTML = insertSuccess + xhttp.responseText;
+                // Set the response directly to the resultVal element
+                document.getElementById("resultVal").innerHTML = xhttp.responseText;
             }
         };
     }

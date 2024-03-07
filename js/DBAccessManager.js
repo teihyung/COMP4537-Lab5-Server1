@@ -26,15 +26,19 @@ class DBAccessManager {
         const xhttp = new XMLHttpRequest();
         xhttp.open("POST", "http://localhost:8008/insert", true);
         xhttp.setRequestHeader("Content-Type", "application/json");
-        xhttp.send(JSON.stringify({ data: data }));
-
+        
+        // Add a unique identifier for each patient (TEMPORARY CODE)
+        const dataWithIds = data.map((patient, index) => ({ patientid: index + 1, ...patient }));
+    
+        xhttp.send(JSON.stringify({ data: dataWithIds }));
+    
         xhttp.onreadystatechange = () => {
             if (xhttp.readyState === 4 && xhttp.status === 200) {
                 // Set the response directly to the resultVal element
                 document.getElementById("resultVal").innerHTML = xhttp.responseText;
             }
         };
-    }
+    }    
 
     submitQuery() {
         const query = document.getElementById("queryInput").value.toUpperCase();

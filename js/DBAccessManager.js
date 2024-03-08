@@ -1,5 +1,40 @@
-class DBAccessManager {
+/**
+ * Class for managing HTTP requests
+ */
+class HttpRequestManager {
     constructor() {
+        this.baseUrl = "http://localhost:8008";
+    }
+
+    sendRequest(method, url, headers, data, callback) {
+        const xhttp = new XMLHttpRequest();
+        xhttp.open(method, this.baseUrl + url, true);
+
+        // Set headers
+        if (headers) {
+            for (const [key, value] of Object.entries(headers)) {
+                xhttp.setRequestHeader(key, value);
+            }
+        }
+
+        // Set data and send request
+        xhttp.send(data);
+
+        // Handle response
+        xhttp.onreadystatechange = () => {
+            if (xhttp.readyState === 4) {
+                callback(xhttp.status, xhttp.responseText);
+            }
+        };
+    }
+}
+
+/**
+ * Class for managing database access
+ */
+class DBAccessManager {
+    constructor(httpRequestManager) {
+        this.httpRequestManager = httpRequestManager;
         this.attachEventListeners();
     }
 
@@ -23,50 +58,47 @@ class DBAccessManager {
             { name: 'Jack Ma', dateOfBirth: '1961-01-30' },
             { name: 'Elon Musk', dateOfBirth: '1999-01-01' }
         ];
-        const xhttp = new XMLHttpRequest();
-        xhttp.open("POST", "http://localhost:8008/insert", true);
-        xhttp.setRequestHeader("Content-Type", "application/json");
-        xhttp.onreadystatechange = () => {
-            if (xhttp.readyState === 4 && xhttp.status === 200) {
-                // Set the response directly to the resultVal element
-                document.getElementById("resultVal").innerHTML = xhttp.responseText;
+
+        const dataWithIds = data.map((patient, index) => ({ patientid: index + 1, ...patient }));
+        const requestData = JSON.stringify({ data: dataWithIds });
+
+        const headers = { "Content-Type": "application/json" };
+
+        this.httpRequestManager.sendRequest("POST", "/insert", headers, requestData, (status, responseText) => {
+            if (status === 200) {
+                document.getElementById("resultVal").innerHTML = responseText;
             }
-        };
-    }    
+        });
+    }
 
     submitQuery() {
         const query = document.getElementById("queryInput").value.toUpperCase();
         const isSelect = query.startsWith("SELECT");
         const isInsert = query.startsWith("INSERT");
         const method = isSelect ? "GET" : "POST";
-        const xhttp = new XMLHttpRequest();
-
-        let url = "http://localhost:8008/query";
+        let url = "/query";
 
         if (isSelect) {
             url += "?query=" + encodeURIComponent(query);
-            xhttp.open(method, url, true);
-            xhttp.send();
+            this.httpRequestManager.sendRequest(method, url, null, null, (status, responseText) => {
+                if (status === 200) {
+                    document.getElementById("resultVal").innerHTML = responseText;
+                }
+            });
         } else {
-            xhttp.open(method, url, true);
-            if (isInsert) {
-                xhttp.setRequestHeader("Content-Type", "application/json");
-                const data = JSON.stringify({ query: query });
-                xhttp.send(data);
-            } else {
-                xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-                xhttp.send("query=" + encodeURIComponent(query));
-            }
-        }
+            const headers = isInsert ? { "Content-Type": "application/json" } : { "Content-Type": "application/x-www-form-urlencoded" };
+            const requestData = isInsert ? JSON.stringify({ query: query }) : "query=" + encodeURIComponent(query);
 
-        xhttp.onreadystatechange = () => {
-            if (xhttp.readyState === 4 && xhttp.status === 200) {
-                document.getElementById("resultVal").innerHTML = xhttp.responseText;
-            }
-        };
+            this.httpRequestManager.sendRequest(method, url, headers, requestData, (status, responseText) => {
+                if (status === 200) {
+                    document.getElementById("resultVal").innerHTML = responseText;
+                }
+            });
+        }
     }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    new DBAccessManager();
+    const httpRequestManager = new HttpRequestManager();
+    new DBAccessManager(httpRequestManager);
 });

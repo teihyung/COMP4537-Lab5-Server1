@@ -26,12 +26,6 @@ class DBAccessManager {
         const xhttp = new XMLHttpRequest();
         xhttp.open("POST", "http://localhost:8008/insert", true);
         xhttp.setRequestHeader("Content-Type", "application/json");
-        
-        // Add a unique identifier for each patient (TEMPORARY CODE)
-        const dataWithIds = data.map((patient, index) => ({ patientid: index + 1, ...patient }));
-    
-        xhttp.send(JSON.stringify({ data: dataWithIds }));
-    
         xhttp.onreadystatechange = () => {
             if (xhttp.readyState === 4 && xhttp.status === 200) {
                 // Set the response directly to the resultVal element
@@ -45,9 +39,9 @@ class DBAccessManager {
         const isSelect = query.startsWith("SELECT");
         const isInsert = query.startsWith("INSERT");
         const method = isSelect ? "GET" : "POST";
-        let url = "http://localhost:8008/query";
-
         const xhttp = new XMLHttpRequest();
+
+        let url = "http://localhost:8008/query";
 
         if (isSelect) {
             url += "?query=" + encodeURIComponent(query);

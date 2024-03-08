@@ -60,14 +60,20 @@ class DBAccessManager {
                 const data = JSON.stringify({ query: query });
                 xhttp.send(data);
             } else {
-                xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-                xhttp.send("query=" + encodeURIComponent(query));
+                // return error on resultVal
+                document.getElementById("resultVal").innerHTML = errorStr;
             }
         }
 
         xhttp.onreadystatechange = () => {
-            if (xhttp.readyState === 4 && xhttp.status === 200) {
-                document.getElementById("resultVal").innerHTML = xhttp.responseText;
+            if (xhttp.readyState === 4) {
+                const response = JSON.parse(xhttp.responseText); // Parse JSON response
+                // display status and response in resultVal
+                if (xhttp.status === 200) {
+                    document.getElementById("resultVal").innerHTML = "Success: " + JSON.stringify(response, null, 2);
+                } else {
+                    document.getElementById("resultVal").innerHTML = "Error: " + JSON.stringify(response, null, 2);
+                }
             }
         };
     }

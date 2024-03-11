@@ -3,7 +3,7 @@
  */
 class HttpRequestManager {
     constructor() {
-        this.baseUrl = "https://comp-4537-lab5-server2.vercel.app";
+        this.baseUrl = "https://lab5-server2as.vercel.app";
     }
 
     sendRequest(method, url, headers, data, callback) {
@@ -58,7 +58,7 @@ class DBAccessManager {
             { name: 'Elon Musk', dateOfBirth: '1999-01-01' }
         ];
         const xhttp = new XMLHttpRequest();
-        xhttp.open("POST", "https://comp-4537-lab5-server2.vercel.app/insert", true);
+        xhttp.open("POST", "https://lab5-server2as.vercel.app/insert", true);
         xhttp.setRequestHeader("Content-Type", "application/json");
         
         // Add a unique identifier for each patient (TEMPORARY CODE)
@@ -79,7 +79,7 @@ class DBAccessManager {
         const isSelect = query.startsWith("SELECT");
         const isInsert = query.startsWith("INSERT");
         const method = isSelect ? "GET" : "POST";
-        let url = "https://comp-4537-lab5-server2.vercel.app/query";
+        let url = "https://lab5-server2as.vercel.app/query";
 
         const xhttp = new XMLHttpRequest();
 

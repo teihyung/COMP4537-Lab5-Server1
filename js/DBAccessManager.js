@@ -24,7 +24,7 @@ class DBAccessManager {
             { name: 'Elon Musk', dateOfBirth: '1999-01-01' }
         ];
         const xhttp = new XMLHttpRequest();
-        xhttp.open("POST", "http://localhost:8008/insert", true);
+        xhttp.open("POST", "https://comp-4537-lab5-server2.vercel.app/insert", true);
         xhttp.setRequestHeader("Content-Type", "application/json");
         
         // Add a unique identifier for each patient (TEMPORARY CODE)
@@ -45,7 +45,7 @@ class DBAccessManager {
         const isSelect = query.startsWith("SELECT");
         const isInsert = query.startsWith("INSERT");
         const method = isSelect ? "GET" : "POST";
-        let url = "http://localhost:8008/query";
+        let url = "https://comp-4537-lab5-server2.vercel.app/query";
 
         const xhttp = new XMLHttpRequest();
 

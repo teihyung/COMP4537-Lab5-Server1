@@ -1,3 +1,37 @@
+/**
+ * Class for managing HTTP requests
+ */
+class HttpRequestManager {
+    constructor() {
+        this.baseUrl = "https://comp-4537-lab5-server2.vercel.app";
+    }
+
+    sendRequest(method, url, headers, data, callback) {
+        const xhttp = new XMLHttpRequest();
+        xhttp.open(method, this.baseUrl + url, true);
+
+        // Set headers
+        if (headers) {
+            for (const [key, value] of Object.entries(headers)) {
+                xhttp.setRequestHeader(key, value);
+            }
+        }
+
+        // Set data and send request
+        xhttp.send(data);
+
+        // Handle response
+        xhttp.onreadystatechange = () => {
+            if (xhttp.readyState === 4) {
+                callback(xhttp.status, xhttp.responseText);
+            }
+        };
+    }
+}
+
+/**
+ * Class for managing database access
+ */
 class DBAccessManager {
     constructor() {
         this.attachEventListeners();

@@ -3,7 +3,7 @@
  */
 class HttpRequestManager {
     constructor() {
-        this.baseUrl = "http://localhost:8008";
+        this.baseUrl = "https://comp-4537-lab5-server2.vercel.app";
     }
 
     sendRequest(method, url, headers, data, callback) {

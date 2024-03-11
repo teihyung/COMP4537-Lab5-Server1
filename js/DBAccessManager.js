@@ -33,8 +33,7 @@ class HttpRequestManager {
  * Class for managing database access
  */
 class DBAccessManager {
-    constructor(httpRequestManager) {
-        this.httpRequestManager = httpRequestManager;
+    constructor() {
         this.attachEventListeners();
     }
 
@@ -58,47 +57,62 @@ class DBAccessManager {
             { name: 'Jack Ma', dateOfBirth: '1961-01-30' },
             { name: 'Elon Musk', dateOfBirth: '1999-01-01' }
         ];
-
+        const xhttp = new XMLHttpRequest();
+        xhttp.open("POST", "http://localhost:8008/insert", true);
+        xhttp.setRequestHeader("Content-Type", "application/json");
+        
+        // Add a unique identifier for each patient (TEMPORARY CODE)
         const dataWithIds = data.map((patient, index) => ({ patientid: index + 1, ...patient }));
-        const requestData = JSON.stringify({ data: dataWithIds });
-
-        const headers = { "Content-Type": "application/json" };
-
-        this.httpRequestManager.sendRequest("POST", "/insert", headers, requestData, (status, responseText) => {
-            if (status === 200) {
-                document.getElementById("resultVal").innerHTML = responseText;
+    
+        xhttp.send(JSON.stringify({ data: dataWithIds }));
+    
+        xhttp.onreadystatechange = () => {
+            if (xhttp.readyState === 4 && xhttp.status === 200) {
+                // Set the response directly to the resultVal element
+                document.getElementById("resultVal").innerHTML = xhttp.responseText;
             }
-        });
-    }
+        };
+    }    
 
     submitQuery() {
         const query = document.getElementById("queryInput").value.toUpperCase();
         const isSelect = query.startsWith("SELECT");
         const isInsert = query.startsWith("INSERT");
         const method = isSelect ? "GET" : "POST";
-        let url = "/query";
+        let url = "http://localhost:8008/query";
+
+        const xhttp = new XMLHttpRequest();
 
         if (isSelect) {
             url += "?query=" + encodeURIComponent(query);
-            this.httpRequestManager.sendRequest(method, url, null, null, (status, responseText) => {
-                if (status === 200) {
-                    document.getElementById("resultVal").innerHTML = responseText;
-                }
-            });
+            xhttp.open(method, url, true);
+            xhttp.send();
         } else {
-            const headers = isInsert ? { "Content-Type": "application/json" } : { "Content-Type": "application/x-www-form-urlencoded" };
-            const requestData = isInsert ? JSON.stringify({ query: query }) : "query=" + encodeURIComponent(query);
-
-            this.httpRequestManager.sendRequest(method, url, headers, requestData, (status, responseText) => {
-                if (status === 200) {
-                    document.getElementById("resultVal").innerHTML = responseText;
-                }
-            });
+            xhttp.open(method, url, true);
+            if (isInsert) {
+                xhttp.setRequestHeader("Content-Type", "application/json");
+                const data = JSON.stringify({ query: query });
+                xhttp.send(data);
+            } else {
+                // return error on resultVal
+                document.getElementById("resultVal").innerHTML = errorStr;
+            }
         }
+
+        xhttp.onreadystatechange = () => {
+            if (xhttp.readyState === 4) {
+                const response = JSON.parse(xhttp.responseText); // Parse JSON response
+                // display status and response in resultVal
+                if (xhttp.status === 200) {
+                    document.getElementById("resultVal").innerHTML = "Success: " + JSON.stringify(response, null, 2);
+                } else {
+                    document.getElementById("resultVal").innerHTML = "Error: " + JSON.stringify(response, null, 2);
+                }
+            }
+        };
     }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    const httpRequestManager = new HttpRequestManager();
-    new DBAccessManager(httpRequestManager);
+    new DBAccessManager();
 });
